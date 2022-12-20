@@ -4,7 +4,25 @@ import BgVideo from "../assets/video/bg.mp4";
 import { FcGoogle } from "react-icons/fc";
 import { motion } from "framer-motion";
 
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { app } from "../config/firebase.config";
+
 const Login = () => {
+  const firebaseAuth = getAuth(app);
+  const google_provider = new GoogleAuthProvider();
+
+  const loginwithGoogle = async () => {
+    await signInWithPopup(firebaseAuth, google_provider).then((userCred) => {
+      firebaseAuth.onAuthStateChanged((userCred) => {
+        if (userCred) {
+          userCred.getIdToken().then((token) => {
+            console.log(token);
+          });
+        }
+      });
+    });
+  };
+
   return (
     <div className="w-screen h-screen relative overflow-hidden flex items-center justify-center">
       <video
@@ -23,6 +41,7 @@ const Login = () => {
           </p>
 
           <motion.div
+            onClick={loginwithGoogle}
             whileTap={{ scale: 0.65 }}
             className="flex items-center justify-center w-full gap-3 bg-lightOverlay backdrop-blur-md px-4 py-2 rounded-3xl cursor-pointer hover:bg-slate-400"
           >
