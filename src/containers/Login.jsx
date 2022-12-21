@@ -6,17 +6,24 @@ import { motion } from "framer-motion";
 
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { app } from "../config/firebase.config";
+import { validateJWTToken } from "../api";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const firebaseAuth = getAuth(app);
   const google_provider = new GoogleAuthProvider();
+
+  const navigate = useNavigate();
 
   const loginwithGoogle = async () => {
     await signInWithPopup(firebaseAuth, google_provider).then((userCred) => {
       firebaseAuth.onAuthStateChanged((userCred) => {
         if (userCred) {
           userCred.getIdToken().then((token) => {
-            console.log(token);
+            validateJWTToken(token).then((data) => {
+              console.log(data);
+              navigate("/", { replace: true });
+            });
           });
         }
       });
