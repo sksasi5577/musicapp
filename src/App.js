@@ -5,10 +5,13 @@ import { Home, Login } from "./containers";
 import { getAuth } from "firebase/auth";
 import { app } from "./config/firebase.config";
 import { validateJWTToken } from "./api";
+import { setUserDetailAction } from "./context/actions/userActions";
+import { useDispatch } from "react-redux";
 
 const App = () => {
   const firebaseAuth = getAuth(app);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     console.log("before Rendering");
@@ -17,6 +20,7 @@ const App = () => {
         userCred.getIdToken().then((token) => {
           validateJWTToken(token).then((data) => {
             console.log(data);
+            dispatch(setUserDetailAction(data.data));
             navigate("/", { replace: true });
           });
         });
